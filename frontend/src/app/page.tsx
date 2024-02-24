@@ -1,13 +1,13 @@
 import React from 'react';
 
-import Form from '../components/Form';
-import Header from '../components/Header';
+import { Footer, Header, TabSelector } from '../components';
 
 export default function Home(): React.ReactNode {
 	return (
 		<main>
 			<Header />
-			<Form />
+			<TabSelector />
+			<Footer />
 		</main>
 	);
 }
