@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiTrash, BiUpvote } from 'react-icons/bi';
 import { RiFileAddFill } from 'react-icons/ri';
+import * as sdk from '../../../sdk';
+
 
 import {
 	Button,
@@ -29,15 +31,29 @@ import {
 } from '../../ui';
 import { AddMemberForm } from './AddMemberForm';
 import { CreateProposalForm } from './CreateProposalForm';
+import { proposalManager } from 'src/constants';
 
 const memberTableHeaderItems: string[] = ['Address', 'Actions'];
-
-const memberTableItems: string[] = ['0xc0ffee254729296a45a3885639AC7E10F9d54979'];
 
 export function CommitteeTab(): React.ReactNode {
 	const deleteMember = (address: string) => {
 		console.log(`Delete ${address}`);
 	};
+
+	const [memberTableItems, setMemberTableItems] = useState<string[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			console.log('Fetching proposals');
+			const comitee = await sdk.getComitee(proposalManager);
+			setMemberTableItems(comitee);
+		};
+
+		// call the function
+		fetchData()
+			// make sure to catch any error
+			.catch(console.error);
+	}, []);
 
 	return (
 		<Card>
