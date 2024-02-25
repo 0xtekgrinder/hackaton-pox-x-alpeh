@@ -14,7 +14,7 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-	title: 'DApp Voter',
+	title: 'VCom',
 	description: 'A DAO with random voter elections using VRF.',
 };
 
