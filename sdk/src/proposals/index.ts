@@ -10,6 +10,7 @@ export type Proposal = {
 
 export type AggregateType = {
     proposals: string[];
+    comitee: string[];
 }
 
 export async function createProposal(proposal: Proposal, account: ethereum.ETHAccount): Promise<void> {
@@ -28,8 +29,7 @@ export async function createProposal(proposal: Proposal, account: ethereum.ETHAc
         APIServer: DEFAULT_API_V2,
     });
 
-    const proposals = aggr.proposals;
-    proposals.push(fileHashPublishStore.item_hash);
+    aggr.proposals.push(fileHashPublishStore.item_hash);
 
     await aggregate.Publish<AggregateType>({
         channel: 'AmazingVote',
@@ -37,9 +37,7 @@ export async function createProposal(proposal: Proposal, account: ethereum.ETHAc
         address: account.address,
         key: 'AmazingVote',
         APIServer: DEFAULT_API_V2,
-        content: {
-            proposals,
-        },
+        content: aggr,
     });
 }
 
@@ -61,4 +59,33 @@ export async function getProposals(account: ethereum.ETHAccount): Promise<Propos
     }
 
     return proposals;
+}
+
+export async function getComitee(account: ethereum.ETHAccount): Promise<string[]> {
+    const aggr = await aggregate.Get<AggregateType>({
+        address: account.address,
+        key: 'AmazingVote',
+        APIServer: DEFAULT_API_V2,
+    });
+
+    return aggr.comitee;
+}
+
+export async function addComiteeMember(account: ethereum.ETHAccount, address: string): Promise<void> {
+    const aggr = await aggregate.Get<AggregateType>({
+        address: account.address,
+        key: 'AmazingVote',
+        APIServer: DEFAULT_API_V2,
+    });
+
+    aggr.comitee.push(address);
+
+    await aggregate.Publish<AggregateType>({
+        channel: 'AmazingVote',
+        account: account,
+        address: account.address,
+        key: 'AmazingVote',
+        APIServer: DEFAULT_API_V2,
+        content: aggr,
+    });
 }
