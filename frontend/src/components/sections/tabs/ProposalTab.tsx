@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiUpvote } from 'react-icons/bi';
 import { RiFileAddFill } from 'react-icons/ri';
 
+import * as sdk from '../../../sdk';
 import {
 	Button,
 	Card,
@@ -28,6 +29,7 @@ import {
 	TableRow,
 } from '../../ui';
 import { CreateProposalForm } from './CreateProposalForm';
+import { proposalManager } from 'src/constants';
 
 interface ProposalTableItem {
 	name: string;
@@ -39,24 +41,30 @@ interface ProposalTableItem {
 
 const proposalTableHeaderItems: string[] = ['Name', 'Description', 'Vote begins', 'Vote ends', 'Actions'];
 
-const proposalTableItems: ProposalTableItem[] = [
-	{
-		name: 'Proposal 1',
-		description: 'A brief description...',
-		voteBegins: new Date('2024-02-24 18:41:00'),
-		voteEnds: new Date('2024-02-25 18:41:00'),
-		choices: ['Yes', 'No', 'Abstract'],
-	},
-	{
-		name: 'Proposal 2',
-		description: 'A brief description 2...',
-		voteBegins: new Date('2024-02-24 18:41:00'),
-		voteEnds: new Date('2024-02-25 18:41:00'),
-		choices: [],
-	},
-];
-
 export function ProposalTab(): React.ReactNode {
+	const [proposalTableItems, setProposalTableItems] = useState<ProposalTableItem[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			console.log('Fetching proposals');
+			const proposals = await sdk.getProposals(proposalManager);
+			setProposalTableItems(
+				proposals.map((proposal) => ({
+					name: proposal.title,
+					description: proposal.description,
+					choices: proposal.choices,
+					voteBegins: new Date(proposal.startTimestamp),
+					voteEnds: new Date(proposal.endTimestamp),
+				})),
+			);
+		};
+
+		// call the function
+		fetchData()
+			// make sure to catch any error
+			.catch(console.error);
+	}, []);
+
 	const vote = (choice: string) => {
 		console.log(`You have voted for ${choice}`);
 	};

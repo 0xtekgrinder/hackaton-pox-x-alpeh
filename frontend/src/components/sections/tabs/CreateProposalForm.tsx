@@ -1,7 +1,11 @@
 'use client';
 
+import { ETHAccount } from 'aleph-sdk-ts/dist/accounts/ethereum';
+import { JsonRPCWallet } from 'aleph-sdk-ts/dist/accounts/providers/JsonRPCWallet';
 import React from 'react';
+import { useEthersSigner } from 'src/ethers';
 
+import * as sdk from '../../../sdk';
 import { Button, Input, Label } from '../../ui';
 
 interface ProposalFormData {
@@ -13,7 +17,16 @@ interface ProposalFormData {
 }
 
 export function CreateProposalForm(): React.ReactNode {
+	const signer = useEthersSigner();
 	const createProposal = (e: any) => {
+		const fetchData = async (proposalData: ProposalFormData) => {
+			const wow = await signer;
+			if (!wow) return;
+			const wallet = new JsonRPCWallet(wow.provider);
+			const account = new ETHAccount(wallet, wow._address);
+			sdk.createProposal(account, proposalData);
+		};
+
 		e.preventDefault();
 
 		const proposalData: ProposalFormData = {
@@ -26,7 +39,7 @@ export function CreateProposalForm(): React.ReactNode {
 
 		e.target.reset();
 
-		console.log(proposalData);
+		fetchData(proposalData);
 	};
 
 	return (

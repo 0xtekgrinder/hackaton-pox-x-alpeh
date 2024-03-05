@@ -1,0 +1,1 @@
+export const proposalManager = "0x4d5eb3827bde5183a627eB996AF75Ef56Bb9ab9a";
